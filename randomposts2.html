@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+<title></title>
+<style type="text/css">
+#loading {
+	width: 100px;
+	height: 100px;
+	margin: 0 auto;
+	padding: 20px;
+	right: 100%;
+	top: 50%;
+}
+</style>
+<!--/**مدونة مداد الجليد**/-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> 
+</head>
+<body>
+	<div id="loading">
+		<img src="https://feed.mikle.com/images/squares.svg" />
+	</div>
+	<div id="error" style="display:none;" ></div>
+<script type="text/javascript">
+$(function() {
+	function get_widget() {
+		var widget_id = undefined;
+		var widget_parameter = '';
+		
+		widget_parameter = '{"type":"","sources":[{"source":"http://false/feeds/posts/default","type":"RSS"}],"name":"","width":0,"height":"470","height_by_article":0,"target":"_blank","font":"Arial, Helvetica, sans-serif","title_font_size":"16","item_title_font_size":"16","item_description_font_size":"12","border":"off","css_url":"","responsive":"on","text_direction":"left","text_alignment":"left","corner":"square","scroll":"on","auto_scroll":"on","auto_scroll_direction":"up","auto_scroll_step_speed":"4","auto_scroll_mc_speed":"20","sort":"rnd","title":"off","title_sentence":"","title_link":"","title_bgcolor":"#ffffff","title_color":"#505659","title_bgimage":"","item_bgcolor":"#ffffff","item_bgimage":"","item_title_length":"200","item_title_color":"#false","item_border_bottom":"on","item_description":"both","item_link":"off","item_description_length":"150","item_description_color":"#505659","item_date":"on","item_date_format":"%b %e, %Y %k:%M","item_date_timezone":"","item_description_style":"thumbnail","item_thumbnail":"crop","item_thumbnail_selection":"auto","article_num":"9999","item_player":"youtube","keyword_inc":"","keyword_exc":""}';
+		$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
+			options.async = true;
+		});
+		$.post('https://feed.mikle.com/api/widget/read/', {widget_id: widget_id, widget_parameter: widget_parameter, format: 'html'}, function (data) {
+			if (data.status == 'ok') {
+				$('#loading').fadeOut('fast', function() {
+					if (data.response.expired) {
+						$('#error').html(data.message);
+						$('#error').show();
+					} else {
+						$('body').html(data.response.widget);
+
+						if ($('#fw-custom-css[data-fw-css-href]')[0]) {
+							var href = $('#fw-custom-css').attr('data-fw-css-href');
+														$('#fw-custom-css').attr('href', href);
+													}
+
+						$('img[data-fw-img-src]').each(function(){
+							var src = $(this).attr('data-fw-img-src');
+														$(this).attr('src', src);
+													});
+					}
+				});
+			} else {
+				$('#loading').fadeOut('fast', function() {
+					$('#error').html(data.message);
+					$('#error').show();
+				});
+			}
+		}, 'json');
+
+	}
+	
+	get_widget();
+});
+</script>
+</body>
+</html>
